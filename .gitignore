@@ -1,0 +1,8 @@
+# default ignored files from IDF template
+build/
+sdkconfig
+sdkconfig.old
+
+# ctags, cscopes
+/tags
+/cscope*
