@@ -4,8 +4,9 @@
 /* ESP32 */
 #include "esp_system.h"
 #include "esp_spi_flash.h"
-/* C library (newlib) */
-#include <stdio.h>
+#include "esp_log.h"
+
+static const char* TAG = "CHIP_INFO";
 
 void print_chip_info()
 {
@@ -23,19 +24,19 @@ void print_chip_info()
 	_heapSz = esp_get_free_heap_size();
 
 	/* Print chip information */
-	printf("ESP32 chip model: %s r%d\n", \
+	ESP_LOGI(TAG, "ESP32 chip model: %s r%d", \
 			pszChipNames[_chipInfo.model], _chipInfo.revision);
-	printf("  Core: %d\n", _chipInfo.cores);
-	printf("  S.Flash: %dMB (%s)\n", _sflashMb, \
+	ESP_LOGD(TAG, "  Core: %d", _chipInfo.cores);
+	ESP_LOGD(TAG, "  S.Flash: %dMB (%s)", _sflashMb, \
 			(_chipInfo.features & CHIP_FEATURE_EMB_FLASH) ? "Embedded" : "External");
-	printf("  Free heap size: %d / %d bytes\n", _intnHeapSz, _heapSz);
+	ESP_LOGV(TAG, "  Free heap size: %d / %d bytes\n", _intnHeapSz, _heapSz);
 	if (_chipInfo.features & CHIP_FEATURE_WIFI_BGN)
 	{
-		printf("  WiFi supported (802.11bgn 2.4GHz)\n");
+		ESP_LOGD(TAG, "  WiFi supported (802.11bgn 2.4GHz)");
 	}
 	if (_chipInfo.features & CHIP_FEATURE_BT)
 	{
-		printf("  Bluetooth supported %s\n", \
+		ESP_LOGD(TAG, "  Bluetooth supported %s", \
 				(_chipInfo.features & CHIP_FEATURE_BLE) ? "(+ BLE)" : "");
 	}
 }
@@ -43,9 +44,13 @@ void print_chip_info()
 
 void app_main(void)
 {
+	esp_log_level_set(TAG, ESP_LOG_ERROR);
 	print_chip_info();
-
-    while (1) {
+	
+	esp_log_level_set(TAG, ESP_LOG_INFO);
+	print_chip_info();
+    
+	while (1) {
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }
